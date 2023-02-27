@@ -125,12 +125,8 @@ findUser.addEventListener('submit', function(e){
 
         response.json().then((data) => {
             if (!data.message) {
-                /*console.log(data[0].avatar);
                 messageOne.textContent = "";
-                messageTwo.innerHTML = "<b>Name: </b>"+ data[0].name + "<br><br><b>Email</b>: " + data[0].email + "<br><br><b>Phone number</b>: " + data[0].phone + "<br><br><p></p><b >Profile pic: </b>" + "<img class=\"avatar\" id=\"searchImage\" src=\"images/" + data[0].avatar + "\" alt=\"No profile pic found\" ></img></p>";
-
-                document.getElementById('searchImage').style.display = 'inline-block';*/
-
+                messageTwo.textContent = "";
 
                 var userTable = document.getElementById('userData');
                 userTable.textContent = "";

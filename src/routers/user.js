@@ -97,7 +97,7 @@ router.get('/findUserData', async (req,res) => {
     
     try {
         const searchQuery = req.query.data;
-        const regext = new RegExp(searchQuery);
+        const regext = new RegExp(searchQuery,"i");
 
         const user = await User.find({ $or: [
             {name: regext},
