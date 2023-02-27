@@ -1,0 +1,120 @@
+body{
+    color: #333333;
+    /* color: rgb(177, 177, 177); */
+    /* background-color: rgb(24, 20, 20); */
+    font-family: Arial, Helvetica, sans-serif;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding:  0 16px;
+
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.main-content{
+    flex-grow: 1;
+}
+
+footer{
+    color: #888888;
+    border-top: 1px solid #eeeeee;
+    margin-top: 16px;
+    padding: 16px 0;
+}
+
+header{
+    margin-top: 16px;
+    margin-bottom: 48px;
+}
+
+h1{
+    font-size: 64px;
+    margin-bottom: 16px;
+}
+
+header a{
+    color: #888888;
+    margin-right: 16px;
+    text-decoration: none;
+}
+
+.portrait{
+    height: 200px;
+}
+
+input{
+    border: 1px solid #cccccc;
+    padding: 8px;
+}
+
+button{
+    cursor: pointer;
+    border: 1px solid #888888;
+    background-color: #888888;
+    color: white;
+    padding: 8px;
+}
+
+#findUser, #addNewUser{
+    display: none;
+}
+
+#userData{
+    width: 1500px;
+    text-align: center;
+}
+
+#userData td{
+    background-color: black;
+}
+
+#userData th{
+    color: rgb(31, 160, 138);
+    background-color: rgb(180, 211, 216);
+    font-size: larger;
+    text-transform: capitalize;
+}
+
+#userData td{
+    text-transform: capitalize;
+}
+
+#userData tr{
+    color: rgb(29, 172, 160);
+}
+
+._id{
+    display: none;
+}
+
+.edit{
+    background-color: rgb(16, 185, 228);
+    padding: 7px 13px;
+    border-radius: 10%;
+    font-size: medium;
+}
+
+.delete{
+    background-color: rgb(209, 46, 46);
+    padding: 7px 13px;
+    border-radius: 10%;
+    font-size: medium;
+}
+
+#userData .delete{
+    margin-left: 20px;
+}
+
+#searchImage{
+    display: inline-block; 
+    vertical-align:top;
+} 
+
+
+
+td .avatar{
+    height: 100px;
+    width: 130px;
+    display: inline;
+}

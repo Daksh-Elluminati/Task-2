@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+    <script src="/js/client.js" defer></script>
+</head>
+<body>
+    <div class="main-content">
+        {{>header}}
+        
+        <h2 id="userDisplayMessage">Use this page to get all user  data.</h2>
+
+        <form id="findUser" action="/user.js" method="post" enctype="multipart/form-data">
+            <label for="search">Enter value: </label>
+            <input type="text" id="search" name="search" placeholder="Enter information">
+
+            &nbsp;
+
+            <button id="searchUser">Search</button>
+        </form>
+
+        <form id="addNewUser" method="post" action="http://localhost:3000/addUser" enctype="multipart/form-data" >
+            <label for="name">Name: </label>
+            <input type="text" name="name" id="name" placeholder="Enter Name" required="required">
+
+            {{!-- <br><br> --}}
+            &nbsp;&nbsp;
+
+            <label for="email">Email: </label>
+            <input type="text" name="email" id="email" placeholder="Enter email" required="required" >
+
+            {{!-- <br><br> --}}
+            &nbsp;&nbsp;
+
+            <label for="phone">Phone: </label>
+            <input type="text" name="phone" id="phone" placeholder="Enter phone number with country code" size="30" required="required">
+
+            {{!-- <br><br> --}}
+            &nbsp;&nbsp;
+
+            <label for="avatar">picture: </label>
+            <input type="file" name="avatar" id="avatar" placeholder="Add image" required="required">
+
+            {{!-- <br><br> --}}
+            &nbsp;&nbsp;&nbsp;
+
+            {{!-- <button>Add user</button> --}}
+            <button id="addUser">Add User</button>
+        </form>
+
+        <p id="message-1"></p>
+
+        <p id="message-2"></p>
+        
+        <table id="userData">
+        </table>
+
+    </div>
+
+    {{>footer}}
+
+    
+</body>
+</html>
