@@ -111,7 +111,9 @@ button{
     vertical-align:top;
 } 
 
-
+.errMsg{
+    display: none;
+}
 
 td .avatar{
     height: 100px;

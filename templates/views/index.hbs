@@ -25,33 +25,40 @@
             <button id="searchUser">Search</button>
         </form>
 
-        <form id="addNewUser" method="post" action="http://localhost:3000/addUser" enctype="multipart/form-data" >
-            <label for="name">Name: </label>
-            <input type="text" name="name" id="name" placeholder="Enter Name" required="required">
+        <form id="addNewUser" enctype="multipart/form-data" >
+            <label for="userName">Name: </label>
+            <input type="text" name="name" id="userName" placeholder="Enter Name" onchange="valName(this)">
+            <label for="errMsgName" class="errMsg" id="errName"></label>
 
-            {{!-- <br><br> --}}
-            &nbsp;&nbsp;
+            <br><br>
+            {{!-- &nbsp;&nbsp; --}}
 
             <label for="email">Email: </label>
-            <input type="text" name="email" id="email" placeholder="Enter email" required="required" >
+            <input type="text" name="email" id="email" placeholder="Enter email" onchange="valEmail(this)" >
+            <label for="errMsgEmail" class="errMsg" id="errEmail"></label>
 
-            {{!-- <br><br> --}}
-            &nbsp;&nbsp;
+            <br><br>
+            {{!-- &nbsp;&nbsp; --}}
 
             <label for="phone">Phone: </label>
-            <input type="text" name="phone" id="phone" placeholder="Enter phone number with country code" size="30" required="required">
+            <input type="text" name="phone" id="phone" placeholder="Enter phone number with country code" size="30" onchange="valPhone(this)" >
+            <label for="errMsgPhone" class="errMsg" id="errPhone"></label>
 
-            {{!-- <br><br> --}}
-            &nbsp;&nbsp;
+            <br><br>
+            {{!-- &nbsp;&nbsp; --}}
 
             <label for="avatar">picture: </label>
-            <input type="file" name="avatar" id="avatar" placeholder="Add image" required="required">
+            <input type="file" name="avatar" id="avatar" placeholder="Add image"  accept="image/png, image/jpeg, image/jpg" onchange="valFile(this)">
+            <label for="errMsgAvatar" class="errMsg" id="errAvatar"></label>
 
-            {{!-- <br><br> --}}
-            &nbsp;&nbsp;&nbsp;
+            <br><br>
+            {{!-- &nbsp;&nbsp;&nbsp; --}}
 
             {{!-- <button>Add user</button> --}}
-            <button id="addUser">Add User</button>
+            <button id="addUser" >Add User</button>
+            <button id="editUser" >Edit User</button>
+
+            <input id="userId" style="display: none;" class="userId" type="text">
         </form>
 
         <p id="message-1"></p>
