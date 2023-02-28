@@ -433,3 +433,5 @@ function valFile(file) {
 
     
 }
+
+console.log("Git is working");
