@@ -52,8 +52,13 @@ router.get('/addUser', async (req,res) => {
 
 /** Add a new user */
 router.post('/addUser', upload.single('avatar'),async (req,res) => {
+    if (req.file) {
+        req.body.avatar = req.file.filename
+    }
+    else{
+        req.body.avatar = ""
+    }
     
-    req.body.avatar = req.file.filename
     const user = new User(req.body)
 
     try {
@@ -81,8 +86,9 @@ router.get('/readUser', async (req,res) => {
     //     errorMessage: 'It is working'
     // })
 
-    const users = await User.find({})
+    let users = await User.find({}).skip(req.query.skip).limit(req.query.limit);
 
+    users.push({count: users.length})
     res.send(users);
 })
 
@@ -104,7 +110,7 @@ router.get('/findUserData', async (req,res) => {
             {phone: regext},
             {email: regext},
             {_id: dataID},
-        ]});
+        ]}).skip(req.query.skip).limit(req.query.limit)
 
         if(user.length === 0){
             return res.status(404).send({message: "No record found"});
@@ -124,17 +130,29 @@ router.patch('/user/:id', upload.single('avatar'), async (req,res) => {
         const allowedUpdates = ["name", "email", "phone"];
         const isValidOpertaion = updates.every((update) => allowedUpdates.includes(update));
         
-        const user = await User.findOne({_id: req.params.id})
+        if (!isValidOpertaion) {
+            res.status(400).send('Invalid updates')
+        }
 
+        const user = await User.findOne({_id: req.params.id})
         if (!user) {
             return res.status(404).send('user not found');
         }
-        updates.forEach((update) => user[update] = req.body[update])
-
-        /**only edit this if aprt */
+        
+        
         if (req.file) {
+            if (user.avatar) {
+                fs.unlink("public/images/" + user.avatar, (err) => {
+                    /**Without this function file is not deleted */
+                  });
+            }
             user.avatar = req.file.filename
         }
+
+        
+
+        updates.forEach((update) => user[update] = req.body[update])
+
 
         await user.save();
 
@@ -156,11 +174,17 @@ router.patch('/user/:id', upload.single('avatar'), async (req,res) => {
 router.delete('/user/:id', async (req,res) => {
     try {
         const user = await User.findByIdAndDelete({_id: req.params.id})
-
+        // const user = await User.findById({_id: req.params.id})
         if (!user) {
             return res.status(404).send("User not found");
         }
 
+        if (user.avatar) {
+            fs.unlink("public/images/" + user.avatar, (err) => {
+                /**Without this function file is not deleted */
+              });
+        }
+        
         res.send(user)
 
     } catch (error) {
@@ -182,22 +206,6 @@ router.get('/users/:id/avatar', async (req, res) => {
         res.status(404).send("No avatar");
     }
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 router.get('/*', (req,res) => {
     res.render('404', {

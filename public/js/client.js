@@ -2,9 +2,6 @@
 const messageOne = document.querySelector('#message-1');
 const messageTwo = document.querySelector('#message-2');
 
-/**Variable to check if the update operation is performed or add operation */
-let isEdit = false;
-
 /**Display the form for search user along with the message */
 document.getElementById('searchUser').addEventListener('click', (e) => {
     e.preventDefault();
@@ -51,31 +48,9 @@ document.getElementById('homePage').addEventListener('click', (e) => {
     document.getElementById('userDisplayMessage').textContent = 'Use this page to get all user  data.';
 
     /**Url to fetch data from */
-    const url = "http://localhost:3000/readUser";
+    const url = "http://localhost:3000/readUser?skip=5&limit=5" ;
 
-    /**Fetch the data */
-    fetch(url).then((response) => {
-        /**If data received then parse it into json */
-        response.json().then((data) => {
-            if (!data.message) {
-                messageOne.textContent = "";
-                messageTwo.textContent = "";
-
-                fillData(data)
-
-            }
-            else{
-                messageOne.textContent = "";
-                messageTwo.textContent = data.message;
-            }
-        }).catch(() => {
-            messageOne.textContent = "No user to display"
-            messageTwo.textContent = "";
-        })
-    })
-    .catch(() => {
-        messageOne.textContent = "Unable to fetrch data please check your internet connection"
-    })
+    fetchData(url);
 })
 
 findUser.addEventListener('submit', function(e){
@@ -89,30 +64,30 @@ findUser.addEventListener('submit', function(e){
         return messageTwo.textContent = "";
     }
 
-    const url = 'http://localhost:3000/findUserData?data=' + searchValue;
+    const url = 'http://localhost:3000/findUserData?data=' + searchValue + "&skip=0&limit=10";
 
-    fetch(url).then((response) => {
+    fetchData(url);
+    // fetch(url).then((response) => {
 
-        response.json().then((data) => {
-            if (!data.message) {
-                messageOne.textContent = "";
-                messageTwo.textContent = "";
+    //     response.json().then((data) => {
+    //         if (!data.message) {
+    //             messageOne.textContent = "";
+    //             messageTwo.textContent = "";
 
-                fillData(data)
+    //             fillData(data);
 
-            }
-            else{
-                messageOne.textContent = "";
-                messageTwo.textContent = data.message;
-            }
-        })
-    })
+    //         }
+    //         else{
+    //             messageOne.textContent = "";
+    //             messageTwo.textContent = data.message;
+    //         }
+    //     })
+    // })
 });
 
 /**ADD a new user */
 document.getElementById('addUser').addEventListener('click', (e) => {
-    e.preventDefault();    
-    isEdit = false;
+    e.preventDefault();
 
     try {
         let flagError = true;
@@ -165,7 +140,6 @@ document.getElementById('addUser').addEventListener('click', (e) => {
 
 document.getElementById('editUser').addEventListener('click', (e) => {
     e.preventDefault()
-    isEdit = true;
 
     try {
         let flagError = true;
@@ -334,6 +308,9 @@ function fillData(data) {
     var userTable = document.getElementById('userData');
     userTable.textContent = "";
 
+    createPage(data[(data.length)-1].count)
+    data.pop();
+
     /**Create a new row */
     var headerRow = document.createElement("tr");
 
@@ -366,6 +343,7 @@ function fillData(data) {
                 var dataCell = document.createElement("td");
                 var image = document.createElement("img");
                 image.src = "images/" + item[key];
+                image.alt = "No avatar";
                 image.classList.add(key)
                 dataCell.appendChild(image);
                 dataRow.appendChild(dataCell);
@@ -386,8 +364,45 @@ function fillData(data) {
 
         dataRow.appendChild(dataCell);
     
-
-
         userTable.appendChild(dataRow);
     });
+}
+
+function createPage(dataLength) {
+    console.log(dataLength);
+    var headerCell = document.createElement("");
+    for (let index = 0; index < dataLength; index++) {
+        document.createElement("button");
+        document.createElement("th");
+
+
+    }
+
+}
+
+/**Fetch the data */
+function fetchData(url) {
+    /**Fetch the data */
+    fetch(url).then((response) => {
+        /**If data received then parse it into json */
+        response.json().then((data) => {
+            if (!data.message) {
+                messageOne.textContent = "";
+                messageTwo.textContent = "";
+
+                fillData(data);
+
+            }
+            else{
+                messageOne.textContent = "";
+                messageTwo.textContent = data.message;
+            }
+        }).catch(() => {
+            messageOne.textContent = "No user to display"
+            messageTwo.textContent = "";
+        })
+    })
+    .catch(() => {
+        messageOne.textContent = "Unable to fetrch data please try again."
+    })
 }
