@@ -69,7 +69,7 @@ router.post('/addUser', upload.single('avatar'),async (req,res) => {
             res.status(400).send({message: "Email is already registered"})
         } else if (error.keyValue && error.keyValue.phone) {
             res.status(400).send({message: 'phone number is already registered'})
-        }        
+        }
     }
 })
 
@@ -140,7 +140,16 @@ router.patch('/user/:id', upload.single('avatar'), async (req,res) => {
 
         res.status(201).send(user);
     } catch (error) {
-        res.status(500).send(error)
+        
+        if (error.errors && error.errors.email) {
+            res.status(400).send({message: error.errors.email.message});
+        } else if (error.errors && error.errors.phone.message) {
+            res.status(400).send({message: error.errors.phone.message});
+        } else if (error.keyValue && error.keyValue.email) {
+            res.status(400).send({message: "Email is already registered"})
+        } else if (error.keyValue && error.keyValue.phone) {
+            res.status(400).send({message: 'phone number is already registered'})
+        }
     }
 })
 

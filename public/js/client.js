@@ -1,15 +1,19 @@
+/**Get the document and manipulate the message whenever required */
 const messageOne = document.querySelector('#message-1');
 const messageTwo = document.querySelector('#message-2');
 
+/**Variable to check if the update operation is performed or add operation */
 let isEdit = false;
 
 /**Display the form for search user along with the message */
 document.getElementById('searchUser').addEventListener('click', (e) => {
     e.preventDefault();
+    /**Display the search form and message in the header and also hide the add user form if visible */
     document.getElementById('findUser').style.display = 'block';
     document.getElementById('addNewUser').style.display = 'none';
     document.getElementById('userDisplayMessage').textContent = 'Use this page to search user data.';
 
+    /**Empty message content if any */
     messageOne.textContent = "";
     messageTwo.textContent = "";
 })
@@ -17,18 +21,20 @@ document.getElementById('searchUser').addEventListener('click', (e) => {
 /**Display the form for adding user along with the message */
 document.getElementById('addUserLink').addEventListener('click', (e) => {
     e.preventDefault();
+
+    /**Display the add user form, message and button and also hide search form, edit user button */
     document.getElementById('addNewUser').style.display = 'block';
     document.getElementById('findUser').style.display = 'none';
-    document.getElementById('userDisplayMessage').textContent = 'Use this page to add new user.';
-    document.getElementById('addUser').style.display = "block";
+    document.getElementById('addUser').style.display = "inline-block";
     document.getElementById('editUser').style.display = "none";
-
-
+    document.getElementById('userDisplayMessage').textContent = 'Use this page to add new user.';
+    
+    /**Empty all the fields and both message if any value is present */
     document.getElementById('userId').value = "";
     document.getElementById('userName').value = "";
     document.getElementById('email').value = "";
     document.getElementById('phone').value = "";
-
+    document.getElementById('avatar').value = "";
     messageOne.textContent = "";
     messageTwo.textContent = "";
 })
@@ -36,85 +42,39 @@ document.getElementById('addUserLink').addEventListener('click', (e) => {
 /**Display the home page message and hide all the necessaru */
 document.getElementById('homePage').addEventListener('click', (e) => {
     e.preventDefault();
+
+    /**Display the header message and hide add user, find user form and message*/
     document.getElementById('addNewUser').style.display = 'none';
     document.getElementById('findUser').style.display = 'none';
-    document.getElementById('userDisplayMessage').textContent = 'Use this page to get all user  data.';
-
     messageOne.textContent = "";
     messageTwo.textContent = "";
+    document.getElementById('userDisplayMessage').textContent = 'Use this page to get all user  data.';
 
+    /**Url to fetch data from */
     const url = "http://localhost:3000/readUser";
 
+    /**Fetch the data */
     fetch(url).then((response) => {
+        /**If data received then parse it into json */
         response.json().then((data) => {
-            if(data){
-                var userTable = document.getElementById('userData');
-                userTable.textContent = "";
-                var headerRow = document.createElement("tr");
+            if (!data.message) {
+                messageOne.textContent = "";
+                messageTwo.textContent = "";
 
-                Object.keys(data[0]).forEach(function(key) {
-                    if (key != 'avatar') {
-                        var headerCell = document.createElement("th");
-                        headerCell.appendChild(document.createTextNode(key));
-                        headerCell.classList.add(key)
-                        headerRow.appendChild(headerCell);
-                    }
-                    else{
-                        var headerCell = document.createElement("th");
-                        headerCell.appendChild(document.createTextNode(key));
-                        headerCell.classList.add(key)
-                        headerRow.appendChild(headerCell);
-                    }
-                    
-                });
+                fillData(data)
 
-                var actionCell = document.createElement("th");
-                actionCell.appendChild(document.createTextNode("Action"));
-                actionCell.classList.add("action");
-                headerRow.appendChild(actionCell);
-
-                userTable.appendChild(headerRow);
-
-                data.forEach(function(item) {
-                    var dataRow = document.createElement("tr");
-
-                    Object.keys(item).forEach(function(key) {
-                        if (key != 'avatar') {
-                            var dataCell = document.createElement("td");
-                            dataCell.appendChild(document.createTextNode(item[key]));
-                            dataCell.classList.add(key)
-                            dataRow.appendChild(dataCell);
-                        }
-                        else{
-                            var dataCell = document.createElement("td");
-                            var image = document.createElement("img");
-                            image.src = "images/" + item[key];
-                            image.classList.add(key)
-                            dataCell.appendChild(image);
-                            dataRow.appendChild(dataCell);
-                        }                    
-                    })
-                    var dataCell = document.createElement("td");
-                
-                    var editButton = document.createElement("button");
-                    editButton.classList.add("edit");
-                    editButton.innerHTML = "Edit";
-
-                    var deleteButton = document.createElement("button");
-                    deleteButton.innerHTML = "Delete"
-                    deleteButton.classList.add("delete");
-                    
-                    dataCell.appendChild(editButton);
-                    dataCell.appendChild(deleteButton);
-
-                    dataRow.appendChild(dataCell);
-                
-
-
-                    userTable.appendChild(dataRow);
-                });
             }
+            else{
+                messageOne.textContent = "";
+                messageTwo.textContent = data.message;
+            }
+        }).catch(() => {
+            messageOne.textContent = "No user to display"
+            messageTwo.textContent = "";
         })
+    })
+    .catch(() => {
+        messageOne.textContent = "Unable to fetrch data please check your internet connection"
     })
 })
 
@@ -138,71 +98,7 @@ findUser.addEventListener('submit', function(e){
                 messageOne.textContent = "";
                 messageTwo.textContent = "";
 
-                var userTable = document.getElementById('userData');
-                userTable.textContent = "";
-                var headerRow = document.createElement("tr");
-
-                Object.keys(data[0]).forEach(function(key) {
-                    if (key != 'avatar') {
-                        var headerCell = document.createElement("th");
-                        headerCell.appendChild(document.createTextNode(key));
-                        headerCell.classList.add(key)
-                        headerRow.appendChild(headerCell);
-                    }
-                    else{
-                        var headerCell = document.createElement("th");
-                        headerCell.appendChild(document.createTextNode(key));
-                        headerCell.classList.add(key)
-                        headerRow.appendChild(headerCell);
-                    }
-                    
-                });
-
-                var actionCell = document.createElement("th");
-                actionCell.appendChild(document.createTextNode("Action"));
-                actionCell.classList.add("action");
-                headerRow.appendChild(actionCell);
-
-                userTable.appendChild(headerRow);
-
-                data.forEach(function(item) {
-                    var dataRow = document.createElement("tr");
-
-                    Object.keys(item).forEach(function(key) {
-                        if (key != 'avatar') {
-                            var dataCell = document.createElement("td");
-                            dataCell.appendChild(document.createTextNode(item[key]));
-                            dataCell.classList.add(key)
-                            dataRow.appendChild(dataCell);
-                        }
-                        else{
-                            var dataCell = document.createElement("td");
-                            var image = document.createElement("img");
-                            image.src = "images/" + item[key];
-                            image.classList.add(key)
-                            dataCell.appendChild(image);
-                            dataRow.appendChild(dataCell);
-                        }                    
-                    })
-                    var dataCell = document.createElement("td");
-                
-                    var editButton = document.createElement("button");
-                    editButton.classList.add("edit");
-                    editButton.innerHTML = "Edit";
-
-                    var deleteButton = document.createElement("button");
-                    deleteButton.innerHTML = "Delete"
-                    deleteButton.classList.add("delete");
-                    
-                    dataCell.appendChild(editButton);
-                    dataCell.appendChild(deleteButton);
-
-                    dataRow.appendChild(dataCell);
-                
-
-
-                    userTable.appendChild(dataRow);
-                });
+                fillData(data)
 
             }
             else{
@@ -234,8 +130,6 @@ document.getElementById('addUser').addEventListener('click', (e) => {
         return;
     }
     
-    
-    console.log(addNewUser.phone.value.length);
     if (addNewUser.phone.value.length > 10 ) {
         document.getElementById('phone').value = addNewUser.phone.value.splice(4);
     }
@@ -262,6 +156,10 @@ document.getElementById('addUser').addEventListener('click', (e) => {
     .catch(error => {
         messageOne.textContent = error.message;
         messageTwo.textContent = "";
+        if (addNewUser.phone.value.length > 10) {
+            addNewUser.phone.value = addNewUser.phone.value.substr(4);
+        }
+
     })
 })
 
@@ -306,6 +204,9 @@ document.getElementById('editUser').addEventListener('click', (e) => {
     .catch(error => {
         messageOne.textContent = error.message;
         messageTwo.textContent = "";
+        if (addNewUser.phone.value.length > 10) {
+            addNewUser.phone.value = addNewUser.phone.value.substr(4);
+        }
     })
 })
 
@@ -320,7 +221,7 @@ $("#userData").on("click", ".edit", function (e) {
 
     /**Show the edit button and hide add button also update the heading*/
     document.getElementById('addUser').style.display = "none";
-    document.getElementById('editUser').style.display = "block";
+    document.getElementById('editUser').style.display = "inline-block";
     document.getElementById('userDisplayMessage').textContent = 'Use this page to edit user.';
 
     /**Get all the data from the row */
@@ -348,18 +249,21 @@ $("#userData").on("click", ".delete", function (e) {
         messageOne.textContent = "Invalid operation performed";
         return messageTwo.textContent = "";
     }
+    var confirmation = confirm("Are you sure you want to delete the user")
 
-    const url = 'http://localhost:3000/user/' + _id;
-
-    fetch(url,{method: "delete"}).then((response) => {
-        response.json().then((data) => {
-            if (data) {
-                document.getElementById('homePage').dispatchEvent(new Event("click"));
-                messageOne.textContent = "User Deleted successfully";
-                messageTwo.textContent = "";
-            }
+    if (confirmation === true) {
+        const url = 'http://localhost:3000/user/' + _id;
+    
+        fetch(url,{method: "delete"}).then((response) => {
+            response.json().then((data) => {
+                if (data) {
+                    document.getElementById('homePage').dispatchEvent(new Event("click"));
+                    messageOne.textContent = "User Deleted successfully";
+                    messageTwo.textContent = "";
+                }
+            })
         })
-    })
+    }
 
 })
 
@@ -408,30 +312,82 @@ function valPhone(phone) {
 
 /** Validate the file at the time of adding or updating */
 function valFile(file) {
-    if (isEdit == true && avatar.files.length === 0) {
+    if (avatar.files.length === 0) {
         document.getElementById('errAvatar').style.display = "none";
         return true;
     }
     else{
-        if (isEdit == false && avatar.files.length === 0) {
-            document.getElementById('errAvatar').innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  Please upload an image file.";
+        if ((file.files[0].type == "image/png" ) || (file.files[0].type == "image/jpg") || (file.files[0].type == "image/jpeg") ){
+            document.getElementById('errAvatar').style.display = "none";
+            return true;
+        }
+        else{
+            document.getElementById('errAvatar').innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  Please upload a file that is png, jpg or jpeg";
             document.getElementById('errAvatar').style.display = "block";
             return false;
         }
-        else{
-            if ((file.files[0].type == "image/png" ) || (file.files[0].type == "image/jpg") || (file.files[0].type == "image/jpeg") ){
-                document.getElementById('errAvatar').style.display = "none";
-                return true;
-            }
-            else{
-                document.getElementById('errAvatar').innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  Please upload a file that is png, jpg or jpeg";
-                document.getElementById('errAvatar').style.display = "block";
-                return false;
-            }
-        }
-    }
-
-    
+    }    
 }
 
-console.log("Git is working");
+function fillData(data) {
+    /**Get table and empty table content */
+    var userTable = document.getElementById('userData');
+    userTable.textContent = "";
+
+    /**Create a new row */
+    var headerRow = document.createElement("tr");
+
+    /**Create table header by taking the object keys */
+    Object.keys(data[0]).forEach(function(key) {
+        var headerCell = document.createElement("th");
+        headerCell.appendChild(document.createTextNode(key));
+        headerCell.classList.add(key)
+        headerRow.appendChild(headerCell);
+    });
+
+    var actionCell = document.createElement("th");
+    actionCell.appendChild(document.createTextNode("Action"));
+    actionCell.classList.add("action");
+    headerRow.appendChild(actionCell);
+
+    userTable.appendChild(headerRow);
+
+    data.forEach(function(item) {
+        var dataRow = document.createElement("tr");
+
+        Object.keys(item).forEach(function(key) {
+            if (key != 'avatar') {
+                var dataCell = document.createElement("td");
+                dataCell.appendChild(document.createTextNode(item[key]));
+                dataCell.classList.add(key)
+                dataRow.appendChild(dataCell);
+            }
+            else{
+                var dataCell = document.createElement("td");
+                var image = document.createElement("img");
+                image.src = "images/" + item[key];
+                image.classList.add(key)
+                dataCell.appendChild(image);
+                dataRow.appendChild(dataCell);
+            }                    
+        })
+        var dataCell = document.createElement("td");
+    
+        var editButton = document.createElement("button");
+        editButton.classList.add("edit");
+        editButton.innerHTML = "Edit";
+
+        var deleteButton = document.createElement("button");
+        deleteButton.innerHTML = "Delete"
+        deleteButton.classList.add("delete");
+        
+        dataCell.appendChild(editButton);
+        dataCell.appendChild(deleteButton);
+
+        dataRow.appendChild(dataCell);
+    
+
+
+        userTable.appendChild(dataRow);
+    });
+}
