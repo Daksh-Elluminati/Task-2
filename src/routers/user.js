@@ -88,6 +88,8 @@ router.get('/readUser', async (req,res) => {
 
     let users = await User.find({}).skip(req.query.skip).limit(req.query.limit);
 
+    let countUser = await User.collection.countDocuments()
+    console.log("count", countUser);
     users.push({count: users.length})
     res.send(users);
 })

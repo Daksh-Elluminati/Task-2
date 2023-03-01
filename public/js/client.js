@@ -48,7 +48,7 @@ document.getElementById('homePage').addEventListener('click', (e) => {
     document.getElementById('userDisplayMessage').textContent = 'Use this page to get all user  data.';
 
     /**Url to fetch data from */
-    const url = "http://localhost:3000/readUser?skip=5&limit=5" ;
+    const url = "http://localhost:3000/readUser?skip=0&limit=10" ;
 
     fetchData(url);
 })
@@ -307,10 +307,11 @@ function fillData(data) {
     /**Get table and empty table content */
     var userTable = document.getElementById('userData');
     userTable.textContent = "";
-
+    
     createPage(data[(data.length)-1].count)
+    // console.log("fill data called");
     data.pop();
-
+    
     /**Create a new row */
     var headerRow = document.createElement("tr");
 
@@ -342,8 +343,9 @@ function fillData(data) {
             else{
                 var dataCell = document.createElement("td");
                 var image = document.createElement("img");
-                image.src = "images/" + item[key];
-                image.alt = "No avatar";
+                if (item[key] === "") image.src = "images/default.jpeg"; 
+                else image.src = "images/" + item[key];
+                image.alt = "No profice pic found"
                 image.classList.add(key)
                 dataCell.appendChild(image);
                 dataRow.appendChild(dataCell);
@@ -369,8 +371,8 @@ function fillData(data) {
 }
 
 function createPage(dataLength) {
-    console.log(dataLength);
-    var headerCell = document.createElement("");
+    // console.log(dataLength);
+    // var headerCell = document.createElement("");
     for (let index = 0; index < dataLength; index++) {
         document.createElement("button");
         document.createElement("th");
