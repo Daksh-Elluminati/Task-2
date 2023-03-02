@@ -425,6 +425,7 @@ function fetchData(url) {
 
 /**Revert back the link according to the request*/
 function readUserLink(searchValue = ""){
+    /**If the query is of search return the query of search else return the Page loading query*/
     if (document.getElementById('findUser').style.display == "block") {
         searchValue = document.querySelector('#search').value;
         return "http://localhost:3000/findUserData?data=" + searchValue;

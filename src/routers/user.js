@@ -1,7 +1,6 @@
 const express = require('express');
 const User = require('../models/user.js');
 const { ObjectId } = require('mongodb');
-const sharp = require('sharp');
 const multer = require('multer');
 const fs = require('fs');
 
@@ -14,40 +13,14 @@ const storage = multer.diskStorage({
     filename: function (req, file, cb) {
       cb(null, Date.now() + " " + file.originalname);
     }
-  });
+});
   
-  const upload = multer({ storage: storage });
-
-/*const upload = multer({
-    destination: function (req, file, cb) {
-        cb(null, 'upload/');
-    },
-    limits:{
-        fileSize: 1000000
-    },
-    fileFilter(req, file, cb){
-        if(!file.originalname.match(/\.(jpg|jpeg|png)$/)){
-            return cb(new Error('please upload a jpg, jpeg or png file only'));
-        }
-        cb(undefined, true)
-    },    
-    filename: function (req, file, cb) {
-        
-        cb(null, file.originalname + Date.now());
-    }
-})*/
-
+const upload = multer({ storage: storage });
 
 router.get('', async (req,res) => {
     res.render('index',{
         title: 'User database',
         countUser: await User.collection.countDocuments()
-    })
-})
-
-router.get('/addUser', async (req,res) => {
-    res.render('index',{
-        title: 'Add User'
     })
 })
 
@@ -81,11 +54,6 @@ router.post('/addUser', upload.single('avatar'),async (req,res) => {
 
 /** Read all the user */
 router.get('/readUser', async (req,res) => {
-
-    // res.render('404',{
-    //     title: 'Reading User',
-    //     errorMessage: 'It is working'
-    // })
 
     let users = await User.find({}).skip(req.query.skip).limit(req.query.limit);
 
@@ -144,7 +112,6 @@ router.patch('/user/:id', upload.single('avatar'), async (req,res) => {
             return res.status(404).send('user not found');
         }
         
-        
         if (req.file) {
             if (user.avatar) {
                 fs.unlink("public/images/" + user.avatar, (err) => {
@@ -152,9 +119,7 @@ router.patch('/user/:id', upload.single('avatar'), async (req,res) => {
                   });
             }
             user.avatar = req.file.filename
-        }
-
-        
+        }       
 
         updates.forEach((update) => user[update] = req.body[update])
 
@@ -179,7 +144,6 @@ router.patch('/user/:id', upload.single('avatar'), async (req,res) => {
 router.delete('/user/:id', async (req,res) => {
     try {
         const user = await User.findByIdAndDelete({_id: req.params.id})
-        // const user = await User.findById({_id: req.params.id})
         if (!user) {
             return res.status(404).send("User not found");
         }

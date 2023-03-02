@@ -42,10 +42,8 @@ userSchema.methods.toJSON = function () {
     const user = this
     const userObject = user.toObject()
     
-    // delete userObject._id;
     delete userObject.createdAt,
     delete userObject.updatedAt,
-    // delete userObject.avatar,
     delete userObject.__v;
     return userObject;
 }
@@ -54,7 +52,7 @@ const User = mongoose.model('User', userSchema);
 
 module.exports = User
 
-/*
+/* Add user check
 const user = new User({
     name: 'Daksh Ghetia',
     email: 'email1@gmail.com',
