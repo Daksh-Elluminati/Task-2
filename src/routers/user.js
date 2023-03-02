@@ -40,7 +40,8 @@ const storage = multer.diskStorage({
 
 router.get('', async (req,res) => {
     res.render('index',{
-        title: 'User database'
+        title: 'User database',
+        countUser: await User.collection.countDocuments()
     })
 })
 
@@ -89,8 +90,7 @@ router.get('/readUser', async (req,res) => {
     let users = await User.find({}).skip(req.query.skip).limit(req.query.limit);
 
     let countUser = await User.collection.countDocuments()
-    console.log("count", countUser);
-    users.push({count: users.length})
+    users.push({countUser: countUser})
     res.send(users);
 })
 
@@ -107,12 +107,15 @@ router.get('/findUserData', async (req,res) => {
         const searchQuery = req.query.data;
         const regext = new RegExp(searchQuery,"i");
 
-        const user = await User.find({ $or: [
+        let user = await User.find({ $or: [
             {name: regext},
             {phone: regext},
             {email: regext},
             {_id: dataID},
         ]}).skip(req.query.skip).limit(req.query.limit)
+
+        const countUser = await User.find({ $or: [{name: regext},{phone: regext},{email: regext},{_id: dataID},]}).countDocuments();
+        user.push({countUser: countUser});
 
         if(user.length === 0){
             return res.status(404).send({message: "No record found"});

@@ -1,6 +1,5 @@
 /**Get the document and manipulate the message whenever required */
 const messageOne = document.querySelector('#message-1');
-const messageTwo = document.querySelector('#message-2');
 
 /**Display the form for search user along with the message */
 document.getElementById('searchUser').addEventListener('click', (e) => {
@@ -12,7 +11,6 @@ document.getElementById('searchUser').addEventListener('click', (e) => {
 
     /**Empty message content if any */
     messageOne.textContent = "";
-    messageTwo.textContent = "";
 })
 
 /**Display the form for adding user along with the message */
@@ -33,9 +31,9 @@ document.getElementById('addUserLink').addEventListener('click', (e) => {
     document.getElementById('phone').value = "";
     document.getElementById('avatar').value = "";
     messageOne.textContent = "";
-    messageTwo.textContent = "";
 })
 
+//1change remove the url and add fetch url
 /**Display the home page message and hide all the necessaru */
 document.getElementById('homePage').addEventListener('click', (e) => {
     e.preventDefault();
@@ -43,46 +41,30 @@ document.getElementById('homePage').addEventListener('click', (e) => {
     /**Display the header message and hide add user, find user form and message*/
     document.getElementById('addNewUser').style.display = 'none';
     document.getElementById('findUser').style.display = 'none';
-    messageOne.textContent = "";
-    messageTwo.textContent = "";
     document.getElementById('userDisplayMessage').textContent = 'Use this page to get all user  data.';
+    messageOne.textContent = "";
 
     /**Url to fetch data from */
-    const url = "http://localhost:3000/readUser?skip=0&limit=10" ;
+    const url = "http://localhost:3000/readUser?skip=0&limit=5" ;
 
     fetchData(url);
 })
 
+/**Fetch the data whenever find user form is submite */
 findUser.addEventListener('submit', function(e){
     e.preventDefault();
 
+    /**Get the search field value*/
     const searchValue = document.querySelector('#search').value;
 
-    // client side approval if the search field is empty then display error message and return 
+    // client side approval if the search field is empty then display error message and return
     if (searchValue === "") {
-        messageOne.textContent = "Please enter any one from id, name, phone number, email";
-        return messageTwo.textContent = "";
+        return messageOne.textContent = "Please enter any one from id, name, phone number, email";
     }
 
-    const url = 'http://localhost:3000/findUserData?data=' + searchValue + "&skip=0&limit=10";
-
+    /**Fetch the data*/
+    const url = readUserLink(searchValue) + "&skip=0&limit=5";
     fetchData(url);
-    // fetch(url).then((response) => {
-
-    //     response.json().then((data) => {
-    //         if (!data.message) {
-    //             messageOne.textContent = "";
-    //             messageTwo.textContent = "";
-
-    //             fillData(data);
-
-    //         }
-    //         else{
-    //             messageOne.textContent = "";
-    //             messageTwo.textContent = data.message;
-    //         }
-    //     })
-    // })
 });
 
 /**ADD a new user */
@@ -90,6 +72,7 @@ document.getElementById('addUser').addEventListener('click', (e) => {
     e.preventDefault();
 
     try {
+        /**flag to check for the validation  and function call to check validation*/
         let flagError = true;
 
         flagError = valName(userName) && flagError;
@@ -97,17 +80,19 @@ document.getElementById('addUser').addEventListener('click', (e) => {
         flagError = valPhone(phone) && flagError;
         flagError = valFile(avatar) && flagError;
 
+        /**If error found on validation then throw error and stop the execution*/
         if (flagError == false) {
             throw new Error("Error found");
         }
-
+        
     } catch (error) {
         return;
     }
     
-    if (addNewUser.phone.value.length > 10 ) {
-        document.getElementById('phone').value = addNewUser.phone.value.splice(4);
-    }
+    /**remove the extra digits which are over */
+    // if (addNewUser.phone.value.length > 10 ) {
+    //     document.getElementById('phone').value = addNewUser.phone.value.splice(4);
+    // }
     addNewUser.phone.value = "+91 " + addNewUser.phone.value
 
     const formData = new FormData(addNewUser);
@@ -126,11 +111,9 @@ document.getElementById('addUser').addEventListener('click', (e) => {
     }).then(data => {
         document.getElementById('homePage').dispatchEvent(new Event("click"));
         messageOne.textContent = "New User Added successfully";
-        messageTwo.textContent = "";
     })
     .catch(error => {
         messageOne.textContent = error.message;
-        messageTwo.textContent = "";
         if (addNewUser.phone.value.length > 10) {
             addNewUser.phone.value = addNewUser.phone.value.substr(4);
         }
@@ -173,11 +156,9 @@ document.getElementById('editUser').addEventListener('click', (e) => {
     }).then(data => {
         document.getElementById('homePage').dispatchEvent(new Event("click"));
         messageOne.textContent = "User updated successfully";
-        messageTwo.textContent = "";
     })
     .catch(error => {
         messageOne.textContent = error.message;
-        messageTwo.textContent = "";
         if (addNewUser.phone.value.length > 10) {
             addNewUser.phone.value = addNewUser.phone.value.substr(4);
         }
@@ -220,8 +201,7 @@ $("#userData").on("click", ".delete", function (e) {
     const _id = $(this).closest("tr").find("._id").html();
 
     if (_id === undefined) {
-        messageOne.textContent = "Invalid operation performed";
-        return messageTwo.textContent = "";
+        return messageOne.textContent = "Invalid operation performed";
     }
     var confirmation = confirm("Are you sure you want to delete the user")
 
@@ -233,7 +213,6 @@ $("#userData").on("click", ".delete", function (e) {
                 if (data) {
                     document.getElementById('homePage').dispatchEvent(new Event("click"));
                     messageOne.textContent = "User Deleted successfully";
-                    messageTwo.textContent = "";
                 }
             })
         })
@@ -243,6 +222,7 @@ $("#userData").on("click", ".delete", function (e) {
 
 /**Validate the name field*/
 function valName(userName) {
+    /**If name is empty display error message else return true and hide error message if any*/
     if (userName.value == "") {
         document.getElementById('errName').innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  Please enter a name.";
         document.getElementById('errName').style.display = "block";
@@ -256,8 +236,10 @@ function valName(userName) {
 
 /**Validate the email field */
 function valEmail(email) {
+    /**Regular expression to match with input email value*/
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     
+    /**Compare with input with regex and if error display error message else return true and hide error message*/
     if (!emailRegex.test(email.value)) {
         document.getElementById('errEmail').innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  Please enter a valid email address.";
         document.getElementById('errEmail').style.display = "block";
@@ -271,7 +253,10 @@ function valEmail(email) {
 
 /**Validate the phone field */
 function valPhone(phone) {
+    /**Regular expression to compare phone number */
     const phoneRegex = /^[0-9]{10}$/;
+
+    /**Compare with input with regex and if error display error message else return true and hide error message */
     if(!phoneRegex.test(phone.value)){
         document.getElementById('errPhone').innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  Please enter a valid 10 digit phone number.";
         document.getElementById('errPhone').style.display = "block";
@@ -286,11 +271,14 @@ function valPhone(phone) {
 
 /** Validate the file at the time of adding or updating */
 function valFile(file) {
+
+    /**If no file uploaded  return true and hide error message*/
     if (avatar.files.length === 0) {
         document.getElementById('errAvatar').style.display = "none";
         return true;
     }
     else{
+        /**If file is provided then check for the type of image uploaded and return error if other than allowed file type is uploaded */
         if ((file.files[0].type == "image/png" ) || (file.files[0].type == "image/jpg") || (file.files[0].type == "image/jpeg") ){
             document.getElementById('errAvatar').style.display = "none";
             return true;
@@ -303,14 +291,15 @@ function valFile(file) {
     }    
 }
 
+/**Fill the data found from response */
 function fillData(data) {
+    /**Create the pagination button for total number of records and also pop the same element after button creation*/
+    createPageBttuon(data[data.length-1].countUser);
+    data.pop();
+
     /**Get table and empty table content */
     var userTable = document.getElementById('userData');
     userTable.textContent = "";
-    
-    createPage(data[(data.length)-1].count)
-    // console.log("fill data called");
-    data.pop();
     
     /**Create a new row */
     var headerRow = document.createElement("tr");
@@ -323,16 +312,20 @@ function fillData(data) {
         headerRow.appendChild(headerCell);
     });
 
+    /**Add action column to the table header */
     var actionCell = document.createElement("th");
     actionCell.appendChild(document.createTextNode("Action"));
     actionCell.classList.add("action");
     headerRow.appendChild(actionCell);
 
+    /**Add the user table in the header row  */
     userTable.appendChild(headerRow);
 
+    /**Loop for each object in the data */
     data.forEach(function(item) {
         var dataRow = document.createElement("tr");
 
+        /**Feed the data into the table elements and append it after completion*/
         Object.keys(item).forEach(function(key) {
             if (key != 'avatar') {
                 var dataCell = document.createElement("td");
@@ -353,6 +346,7 @@ function fillData(data) {
         })
         var dataCell = document.createElement("td");
     
+        /**Add Edit and Delete button at the end of table row data*/
         var editButton = document.createElement("button");
         editButton.classList.add("edit");
         editButton.innerHTML = "Edit";
@@ -363,23 +357,48 @@ function fillData(data) {
         
         dataCell.appendChild(editButton);
         dataCell.appendChild(deleteButton);
-
         dataRow.appendChild(dataCell);
     
+        /**Append the data into the table */
         userTable.appendChild(dataRow);
     });
 }
 
-function createPage(dataLength) {
-    // console.log(dataLength);
-    // var headerCell = document.createElement("");
-    for (let index = 0; index < dataLength; index++) {
-        document.createElement("button");
-        document.createElement("th");
+/**Perform the pagination operation according to the click on button */
+function pagenation(skip, limit) {
 
+    const url = readUserLink() + "&skip=" + skip + "&limit=" + limit ;
+    fetchData(url);
+}
 
+/**Create pagination button according to requirement */
+function createPageBttuon(dataLength) {
+    /**Get pagination list, empty the list and set page count */
+    let paginationList  = document.getElementById('paginationList')
+    paginationList.textContent = "";
+    let index = 0; /**Number of documents per page*/
+    let pageCount = 0; /**number of page count */
+
+    /**Add the buttons until the records are found */
+    while (index < dataLength) {
+        /**Create a new list item and button*/
+        let listItem = document.createElement("li");
+        listItem.classList.add("buttonPageination");
+
+        /**Set the button's text content, id and class along with the on click event and after that insert the button to list item*/
+        let buttonPage = document.createElement("button");
+        buttonPage.textContent = pageCount+1;
+        buttonPage.id = pageCount;
+        buttonPage.addEventListener('click', function () {
+            pagenation(parseInt(buttonPage.id)*5, 5);
+        });
+        listItem.appendChild(buttonPage);
+
+        /**Add the list item to the list and increase the index*/
+        paginationList.appendChild(listItem);
+        index = index + 5;
+        pageCount += 1;
     }
-
 }
 
 /**Fetch the data */
@@ -390,21 +409,28 @@ function fetchData(url) {
         response.json().then((data) => {
             if (!data.message) {
                 messageOne.textContent = "";
-                messageTwo.textContent = "";
-
                 fillData(data);
-
             }
             else{
-                messageOne.textContent = "";
-                messageTwo.textContent = data.message;
+                messageOne.textContent = data.message;
             }
         }).catch(() => {
             messageOne.textContent = "No user to display"
-            messageTwo.textContent = "";
         })
     })
     .catch(() => {
-        messageOne.textContent = "Unable to fetrch data please try again."
+        messageOne.textContent = "Unable to fetch data please try again."
     })
+}
+
+/**Revert back the link according to the request*/
+function readUserLink(searchValue = ""){
+    if (document.getElementById('findUser').style.display == "block") {
+        searchValue = document.querySelector('#search').value;
+        return "http://localhost:3000/findUserData?data=" + searchValue;
+        
+    }
+    else{
+        return "http://localhost:3000/readUser?";
+    }
 }
