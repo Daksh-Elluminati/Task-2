@@ -1,6 +1,12 @@
 /**Get the document and manipulate the message whenever required */
 const messageOne = document.querySelector('#message-1');
 
+let active = 1;
+let isPreClicked = false;
+let isNxtClicked = false;
+let limit = 5;
+let lastCount = 1;
+
 /**Display the form for search user along with the message */
 document.getElementById('searchUser').addEventListener('click', (e) => {
     e.preventDefault();
@@ -45,8 +51,8 @@ document.getElementById('homePage').addEventListener('click', (e) => {
     messageOne.textContent = "";
 
     /**Url to fetch data from */
-    const url = "http://localhost:3000/readUser?skip=0&limit=5" ;
-
+    const url = readUserLink() + "&skip=0&limit=" + limit;
+    active = 1
     fetchData(url);
 })
 
@@ -63,7 +69,8 @@ findUser.addEventListener('submit', function(e){
     }
 
     /**Fetch the data*/
-    const url = readUserLink(searchValue) + "&skip=0&limit=5";
+    const url = readUserLink(searchValue) + "&skip=0&limit=" + limit;
+    active = 1;
     fetchData(url);
 });
 
@@ -100,7 +107,7 @@ document.getElementById('addUser').addEventListener('click', (e) => {
 
     fetch(url, {
         method: "POST", 
-        body: formData 
+        body: formData
     }).then((response) => {
         if (response.ok) {
             return response.json();
@@ -108,7 +115,7 @@ document.getElementById('addUser').addEventListener('click', (e) => {
         return response.json().then((body) => {
             throw new Error(body.message)
         })
-    }).then(data => {
+    }).then((data) => {
         document.getElementById('homePage').dispatchEvent(new Event("click"));
         messageOne.textContent = "New User Added successfully";
     })
@@ -220,6 +227,8 @@ $("#userData").on("click", ".delete", function (e) {
 
 })
 
+/////////////////////////////////                 Validate User                 ///////////////////////////////////////////////
+
 /**Validate the name field*/
 function valName(userName) {
     /**If name is empty display error message else return true and hide error message if any*/
@@ -291,19 +300,65 @@ function valFile(file) {
     }    
 }
 
+/////////////////////////////////                 Read Links                 ///////////////////////////////////////////////
+
+/**Revert back the link according to the request*/
+function readUserLink(searchValue = ""){
+    /**If the query is of search return the query of search else return the Page loading query*/
+    if (document.getElementById('findUser').style.display == "block") {
+        searchValue = document.querySelector('#search').value;
+        return "http://localhost:3000/findUserData?data=" + searchValue + "&";
+    }
+    else{
+        return "http://localhost:3000/findUserData?data=";
+    }
+}
+
+/////////////////////////////////                 Fetch and fill data                 ///////////////////////////////////////////////
+
+/**Fetch the data */
+function fetchData(url) {
+    /**Fetch the data */
+    fetch(url).then((response) => {
+        /**If data received then parse it into json */
+        response.json().then((data) => {
+            if (!data.message) {
+                messageOne.textContent = "";
+                /**Create the pagination button for total number of records and also pop the same element after button creation*/
+                if (data.length > 1) {
+                    createPageBttuon(data[data.length-1].countUser);
+                    data.pop();
+                }
+                else{
+                    data.pop();
+                    document.getElementById('paginationList').textContent = ""
+                } 
+
+                fillData(data);
+            }
+            else{
+                messageOne.textContent = data.message;
+            }
+            
+        }).catch((err) => {
+            messageOne.textContent = "No user to display"
+        })
+    })
+    .catch(() => {
+        messageOne.textContent = "Unable to fetch data please try again."
+    })
+}
+
 /**Fill the data found from response */
 function fillData(data) {
-    /**Create the pagination button for total number of records and also pop the same element after button creation*/
-    createPageBttuon(data[data.length-1].countUser);
-    data.pop();
-
+    
     /**Get table and empty table content */
     var userTable = document.getElementById('userData');
     userTable.textContent = "";
     
     /**Create a new row */
     var headerRow = document.createElement("tr");
-
+    
     /**Create table header by taking the object keys */
     Object.keys(data[0]).forEach(function(key) {
         var headerCell = document.createElement("th");
@@ -362,13 +417,9 @@ function fillData(data) {
         /**Append the data into the table */
         userTable.appendChild(dataRow);
     });
-}
 
-/**Perform the pagination operation according to the click on button */
-function pagenation(skip, limit) {
-
-    const url = readUserLink() + "&skip=" + skip + "&limit=" + limit ;
-    fetchData(url);
+    
+    activePage();
 }
 
 /**Create pagination button according to requirement */
@@ -378,6 +429,19 @@ function createPageBttuon(dataLength) {
     paginationList.textContent = "";
     let index = 0; /**Number of documents per page*/
     let pageCount = 0; /**number of page count */
+
+    let listItem = document.createElement("li");
+    listItem.classList.add("buttonPageination");
+    let buttonPage = document.createElement("button");
+    buttonPage.id = "previous"
+    buttonPage.textContent = "previous";
+    buttonPage.addEventListener('click', function () {
+        pagination(((active)-2)*limit,limit,active);
+        isPreClicked = true;
+        isNxtClicked = false;
+    });
+    listItem.appendChild(buttonPage);
+    paginationList.appendChild(listItem);
 
     /**Add the buttons until the records are found */
     while (index < dataLength) {
@@ -390,48 +454,56 @@ function createPageBttuon(dataLength) {
         buttonPage.textContent = pageCount+1;
         buttonPage.id = pageCount;
         buttonPage.addEventListener('click', function () {
-            pagenation(parseInt(buttonPage.id)*5, 5);
+            pagination(parseInt(buttonPage.id)*limit, limit,parseInt(buttonPage.id)+1);
+            isPreClicked = false;
+            isNxtClicked = false;
         });
         listItem.appendChild(buttonPage);
 
         /**Add the list item to the list and increase the index*/
         paginationList.appendChild(listItem);
-        index = index + 5;
+        index = index + limit;
         pageCount += 1;
     }
+
+    listItem = document.createElement("li");
+    listItem.classList.add("buttonPageination");
+    buttonPage = document.createElement("button");
+    buttonPage.textContent = "next";
+    buttonPage.id = "next"
+    buttonPage.addEventListener('click', function () {
+        pagination(active*limit,limit,active);
+        isPreClicked = false;
+        isNxtClicked = true;
+    });
+    listItem.appendChild(buttonPage);
+    paginationList.appendChild(listItem);
+
+    lastCount = pageCount;
 }
 
-/**Fetch the data */
-function fetchData(url) {
-    /**Fetch the data */
-    fetch(url).then((response) => {
-        /**If data received then parse it into json */
-        response.json().then((data) => {
-            if (!data.message) {
-                messageOne.textContent = "";
-                fillData(data);
-            }
-            else{
-                messageOne.textContent = data.message;
-            }
-        }).catch(() => {
-            messageOne.textContent = "No user to display"
-        })
-    })
-    .catch(() => {
-        messageOne.textContent = "Unable to fetch data please try again."
-    })
+/**Perform the pagination operation according to the click on button */
+function pagination(skip, limit, currActive = 1) {
+
+    const url = readUserLink() + "&skip=" + skip + "&limit=" + limit ;
+    fetchData(url);
+    active = currActive;
 }
 
-/**Revert back the link according to the request*/
-function readUserLink(searchValue = ""){
-    /**If the query is of search return the query of search else return the Page loading query*/
-    if (document.getElementById('findUser').style.display == "block") {
-        searchValue = document.querySelector('#search').value;
-        return "http://localhost:3000/findUserData?data=" + searchValue;
-        
+function activePage() {
+    if (isPreClicked == true) {
+        active = active - 1;
     }
-    else{
-        return "http://localhost:3000/readUser?";
+    else if (isNxtClicked == true) {
+        active = active + 1;
     }
+    /**Hide previous and next button on first and last page */
+    if (active == 1) {
+        document.getElementById("previous").style.display = "none";
+    }
+    console.log(active,lastCount);
+    if(active == lastCount){
+        document.getElementById("next").style.display = "none";
+    }
+    document.getElementById(active-1).style.backgroundColor = "rgb(31, 160, 138)";
 }

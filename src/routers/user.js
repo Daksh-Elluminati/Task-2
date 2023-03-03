@@ -53,14 +53,14 @@ router.post('/addUser', upload.single('avatar'),async (req,res) => {
 })
 
 /** Read all the user */
-router.get('/readUser', async (req,res) => {
+// router.get('/readUser', async (req,res) => {
 
-    let users = await User.find({}).skip(req.query.skip).limit(req.query.limit);
+//     let users = await User.find({}).skip(req.query.skip).limit(req.query.limit);
 
-    let countUser = await User.collection.countDocuments()
-    users.push({countUser: countUser})
-    res.send(users);
-})
+//     let countUser = await User.collection.countDocuments()
+//     users.push({countUser: countUser})
+//     res.send(users);
+// })
 
 /** Read user by id */
 router.get('/findUserData', async (req,res) => {
@@ -158,21 +158,6 @@ router.delete('/user/:id', async (req,res) => {
 
     } catch (error) {
         res.status(500).send("Server error")
-    }
-})
-
-router.get('/users/:id/avatar', async (req, res) => {
-    try {
-        const user = await User.findById(req.params.id)
-
-        if (!user || !user.avatar) {
-            throw new Error()
-        }
-
-        res.set('Content-Type', 'image/png')
-        res.send(user.avatar)
-    } catch (error) {
-        res.status(404).send("No avatar");
     }
 })
 
