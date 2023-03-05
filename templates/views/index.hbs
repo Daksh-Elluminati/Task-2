@@ -41,14 +41,14 @@
             {{!-- &nbsp;&nbsp; --}}
 
             <label for="phone">Phone: </label>
-            <input type="text" name="phone" id="phone" placeholder="Enter phone number with country code" size="30" onchange="valPhone(this)" >
+            <input type="text" name="phone" id="phone" placeholder="Enter 10 digit phone number" maxlength="10" onchange="valPhone(this)">
             <label for="errMsgPhone" class="errMsg" id="errPhone"></label>
 
             <br><br>
             {{!-- &nbsp;&nbsp; --}}
 
             <label for="avatar">picture: </label>
-            <input type="file" name="avatar" id="avatar" placeholder="Add image"  accept="image/png, image/jpeg, image/jpg" onchange="valFile(this)">
+            <input type="file" name="avatar" id="avatar" placeholder="Add image" accept="image/png, image/jpeg, image/jpg" onchange="valFile(this)">
             <label for="errMsgAvatar" class="errMsg" id="errAvatar"></label>
 
             <br><br>

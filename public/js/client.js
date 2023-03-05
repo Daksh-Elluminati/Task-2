@@ -1,9 +1,11 @@
 /**Get the document and manipulate the message whenever required */
 const messageOne = document.querySelector('#message-1');
 
+/**Variables for pagination */
 let active = 1;
 let isPreClicked = false;
 let isNxtClicked = false;
+let isSearch = false;
 let limit = 5;
 let lastCount = 1;
 
@@ -52,7 +54,13 @@ document.getElementById('homePage').addEventListener('click', (e) => {
 
     /**Url to fetch data from */
     const url = readUserLink() + "&skip=0&limit=" + limit;
-    active = 1
+    /**If search is on activate page 2 else activate page 1 */
+    if (isSearch == true) {
+        active = 2
+    } else {
+        active = 1
+    }
+    isSearch = false;
     fetchData(url);
 })
 
@@ -71,6 +79,7 @@ findUser.addEventListener('submit', function(e){
     /**Fetch the data*/
     const url = readUserLink(searchValue) + "&skip=0&limit=" + limit;
     active = 1;
+    isSearch = true;
     fetchData(url);
 });
 
@@ -96,15 +105,11 @@ document.getElementById('addUser').addEventListener('click', (e) => {
         return;
     }
     
-    /**remove the extra digits which are over */
-    // if (addNewUser.phone.value.length > 10 ) {
-    //     document.getElementById('phone').value = addNewUser.phone.value.splice(4);
-    // }
     addNewUser.phone.value = "+91 " + addNewUser.phone.value
 
     const formData = new FormData(addNewUser);
     const url = "http://localhost:3000/addUser";
-
+    isSearch = false;
     fetch(url, {
         method: "POST", 
         body: formData
@@ -148,6 +153,7 @@ document.getElementById('editUser').addEventListener('click', (e) => {
 
     addNewUser.phone.value = "+91 " + addNewUser.phone.value
     const formData = new FormData(addNewUser);
+    isSearch = false;
     const url = "http://localhost:3000/user/" + document.getElementById('userId').value;
 
     fetch(url, {
@@ -491,17 +497,18 @@ function pagination(skip, limit, currActive = 1) {
 }
 
 function activePage() {
-    if (isPreClicked == true) {
+    console.log(active);
+    if (isPreClicked == true && isSearch == false) {
         active = active - 1;
     }
-    else if (isNxtClicked == true) {
+    else if (isNxtClicked == true && isSearch == false) {
         active = active + 1;
     }
     /**Hide previous and next button on first and last page */
     if (active == 1) {
         document.getElementById("previous").style.display = "none";
     }
-    console.log(active,lastCount);
+    console.log(active,lastCount,isSearch);
     if(active == lastCount){
         document.getElementById("next").style.display = "none";
     }

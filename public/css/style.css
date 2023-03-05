@@ -126,3 +126,10 @@ td .avatar{
     margin-right: 1em;
     list-style-type: none;
 }
+
+/**Disable the increment and decrement counter on the number field*/
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
