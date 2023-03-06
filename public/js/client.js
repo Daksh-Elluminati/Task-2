@@ -36,6 +36,7 @@ document.getElementById('addUserLink').addEventListener('click', (e) => {
     document.getElementById('userId').value = "";
     document.getElementById('userName').value = "";
     document.getElementById('email').value = "";
+    document.getElementById('phoneVal').value = "";
     document.getElementById('phone').value = "";
     document.getElementById('avatar').value = "";
     messageOne.textContent = "";
@@ -93,7 +94,7 @@ document.getElementById('addUser').addEventListener('click', (e) => {
 
         flagError = valName(userName) && flagError;
         flagError = valEmail(email) && flagError;
-        flagError = valPhone(phone) && flagError;
+        flagError = valPhone(phoneVal) && flagError;
         flagError = valFile(avatar) && flagError;
 
         /**If error found on validation then throw error and stop the execution*/
@@ -105,9 +106,10 @@ document.getElementById('addUser').addEventListener('click', (e) => {
         return;
     }
     
-    addNewUser.phone.value = "+91 " + addNewUser.phone.value
+    addNewUser.phone.value = "+91 " + addNewUser.phoneVal.value
 
     const formData = new FormData(addNewUser);
+    formData.delete('phoneVal')
     const url = "http://localhost:3000/addUser";
     isSearch = false;
     fetch(url, {
@@ -127,6 +129,7 @@ document.getElementById('addUser').addEventListener('click', (e) => {
     .catch(error => {
         messageOne.textContent = error.message;
         if (addNewUser.phone.value.length > 10) {
+            addNewUser.phoneVal.value = addNewUser.phone.value.substr(4);
             addNewUser.phone.value = addNewUser.phone.value.substr(4);
         }
 
@@ -141,7 +144,7 @@ document.getElementById('editUser').addEventListener('click', (e) => {
 
         flagError = valName(userName) && flagError;
         flagError = valEmail(email) && flagError;
-        flagError = valPhone(phone) && flagError;
+        flagError = valPhone(phoneVal) && flagError;
         flagError = valFile(avatar) && flagError;
 
         if (flagError == false) {
@@ -151,8 +154,9 @@ document.getElementById('editUser').addEventListener('click', (e) => {
         return;
     }
 
-    addNewUser.phone.value = "+91 " + addNewUser.phone.value
+    addNewUser.phone.value = "+91 " + addNewUser.phoneVal.value
     const formData = new FormData(addNewUser);
+    formData.delete('phoneVal')
     isSearch = false;
     const url = "http://localhost:3000/user/" + document.getElementById('userId').value;
 
@@ -173,6 +177,7 @@ document.getElementById('editUser').addEventListener('click', (e) => {
     .catch(error => {
         messageOne.textContent = error.message;
         if (addNewUser.phone.value.length > 10) {
+            addNewUser.phoneVal.value = addNewUser.phone.value.substr(4);
             addNewUser.phone.value = addNewUser.phone.value.substr(4);
         }
     })
@@ -204,7 +209,7 @@ $("#userData").on("click", ".edit", function (e) {
     document.getElementById('userId').value = _id;
     document.getElementById('userName').value = name;
     document.getElementById('email').value = email;
-    document.getElementById('phone').value = phone;
+    document.getElementById('phoneVal').value = phone;
 });
 
 $("#userData").on("click", ".delete", function (e) {  
@@ -272,7 +277,7 @@ function valPhone(phone) {
     const phoneRegex = /^[0-9]{10}$/;
 
     /**Compare with input with regex and if error display error message else return true and hide error message */
-    if(!phoneRegex.test(phone.value)){
+    if(!phoneRegex.test(phoneVal.value)){
         document.getElementById('errPhone').innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  Please enter a valid 10 digit phone number.";
         document.getElementById('errPhone').style.display = "block";
         return false;
@@ -497,7 +502,6 @@ function pagination(skip, limit, currActive = 1) {
 }
 
 function activePage() {
-    console.log(active);
     if (isPreClicked == true && isSearch == false) {
         active = active - 1;
     }
@@ -508,7 +512,6 @@ function activePage() {
     if (active == 1) {
         document.getElementById("previous").style.display = "none";
     }
-    console.log(active,lastCount,isSearch);
     if(active == lastCount){
         document.getElementById("next").style.display = "none";
     }

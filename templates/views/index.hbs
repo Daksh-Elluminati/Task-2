@@ -41,7 +41,8 @@
             {{!-- &nbsp;&nbsp; --}}
 
             <label for="phone">Phone: </label>
-            <input type="text" name="phone" id="phone" placeholder="Enter 10 digit phone number" maxlength="10" onchange="valPhone(this)">
+            <input type="number" name="phoneVal" id="phoneVal" placeholder="Enter 10 digit phone number" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==10) return false;" onchange="valPhone(this)">
+            <input type="text" name="phone" id="phone" style="display: none;">
             <label for="errMsgPhone" class="errMsg" id="errPhone"></label>
 
             <br><br>
